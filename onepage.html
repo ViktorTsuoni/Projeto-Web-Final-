@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skate Hub - Dashboard Professor</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Adumu&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0; 
+            background-color: lightgray;
+        }
+
+        .header h1, .footer h3 {
+            font-family: 'Adumu', sans-serif; 
+            font-size: 2.5em; 
+            font-weight: normal; 
+        }
+        
+        .header {
+            background-color: #7900ac;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header p {
+             font-family: 'Times New Roman', Times, serif;
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: 20px auto; 
+            padding: 0 20px; 
+        }
+        
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        input, select, button {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        button {
+            background-color: #7900ac;
+            color: white;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #5a007d; 
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        th {
+            background-color: #7900ac;
+            color: white;
+        }
+        
+        .remove-btn {
+            background-color: blue;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .footer {
+            background-color: #270065;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .summary {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Skate Hub</h1>
+        <p>Dashboard do Professor</p>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="container">
+            <h2>Adicionar Aluno</h2>
+            <input type="text" id="name" placeholder="Nome do Aluno">
+            <select id="plan">
+                <option value="">Selecione o Plano</option>
+                <option value="Básico">Básico - R$ 80</option>
+                <option value="Intermediário">Intermediário - R$ 120</option>
+                <option value="Avançado">Avançado - R$ 200</option>
+            </select>
+            <select id="day">
+                <option value="">Dia da Semana</option>
+                <option value="Segunda">Segunda</option>
+                <option value="Terça">Terça</option>
+                <option value="Quarta">Quarta</option>
+                <option value="Quinta">Quinta</option>
+                <option value="Sexta">Sexta</option>
+                <option value="Sábado">Sábado</option>
+            </select>
+            <input type="time" id="time">
+            <button onclick="addStudent()">Adicionar</button>
+
+            <h2>Cronograma Semanal</h2>
+            
+            <div class="table-responsive">
+                <table id="table">
+                    <thead>
+                        <tr>
+                            <th>Horário</th>
+                            <th>Segunda</th>
+                            <th>Terça</th>
+                            <th>Quarta</th>
+                            <th>Quinta</th>
+                            <th>Sexta</th>
+                            <th>Sábado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+
+            <div class="summary">
+                <h3>Resumo Financeiro</h3>
+                <p>Total de Alunos: <span id="totalStudents">0</span></p>
+                <p>Aulas por Semana: <span id="weeklyClasses">0</span></p>
+                <p>Receita Semanal: <span id="totalAmount">R$ 0,00</span></p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <h3>Skate Hub</h3>
+            <p>Escola de Skate Profissional</p>
+            <p>Ponta Negra</p>
+            <p>© 2025 Skate Hub - Todos os direitos reservados</p>
+        </div>
+    </div>
+
+    <script>
+        let students = [];
+        let times = [];
+        const prices = { 'Básico': 80, 'Intermediário': 120, 'Avançado': 160, };
+
+        function addStudent() {
+            const name = document.getElementById('name').value;
+            const plan = document.getElementById('plan').value;
+            const day = document.getElementById('day').value;
+            const time = document.getElementById('time').value;
+
+            if (!name || !plan || !day || !time) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+
+            if (students.find(s => s.day === day && s.time === time)) {
+                alert('Horário já ocupado!');
+                return;
+            }
+
+            students.push({ id: Date.now(), name, plan, day, time, price: prices[plan] });
+            
+            if (!times.includes(time)) {
+                times.push(time);
+                times.sort();
+            }
+
+            document.getElementById('name').value = '';
+            document.getElementById('plan').value = '';
+            document.getElementById('day').value = '';
+            document.getElementById('time').value = '';
+
+            updateTable();
+            updateSummary();
+        }
+
+        function removeStudent(id) {
+            students = students.filter(s => s.id !== id);
+            const remainingTimes = new Set(students.map(s => s.time));
+            times = Array.from(remainingTimes).sort();
+            
+            updateTable();
+            updateSummary();
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('tbody');
+            tbody.innerHTML = '';
+
+            if (times.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7">Nenhum aluno cadastrado</td></tr>';
+                return;
+            }
+
+            const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+
+            times.forEach(time => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td><strong>${time}</strong></td>`;
+
+                days.forEach(day => {
+                    const student = students.find(s => s.day === day && s.time === time);
+                    const cell = document.createElement('td');
+                    
+                    if (student) {
+                        cell.innerHTML = `
+                            ${student.name}<br>
+                            <small>${student.plan}</small><br>
+                            <small>R$ ${student.price.toFixed(2)}</small><br>
+                            <button class="remove-btn" onclick="removeStudent(${student.id})">X</button>
+                        `;
+                    } else {
+                        cell.innerHTML = '-';
+                    }
+                    
+                    row.appendChild(cell);
+                });
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateSummary() {
+            const total = students.reduce((sum, s) => sum + s.price, 0);
+            const uniqueStudents = new Set(students.map(s => s.name)).size;
+            document.getElementById('totalStudents').textContent = uniqueStudents;
+            document.getElementById('weeklyClasses').textContent = students.length;
+            document.getElementById('totalAmount').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        updateTable();
+        updateSummary();
+    </script>
+</body>
+</html>
